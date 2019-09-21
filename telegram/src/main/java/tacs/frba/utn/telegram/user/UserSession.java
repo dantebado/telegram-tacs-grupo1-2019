@@ -9,7 +9,12 @@ public class UserSession {
 		AWAITING_INIT,
 		AWAITING_USERNAME,
 		AWAITING_PASSWORD,
-		AWAITING_MENU
+		AWAITING_MENU,
+		REPO_SEARCH_AWAITING_ID,
+		FAVOURITES_AWAITING_OP,
+		FAVOURITES_ADD_AWAITING_ID,
+		FAVOURITES_REMOVE_AWAITING_ID,
+		FAVOURITES_CLEAR_AWAITING_CONFIRMATION
 	}
 	
 	private long chatId;
@@ -53,6 +58,10 @@ public class UserSession {
 	
 	public Object addToCache(String key, Object value) {
 		return cacheMemory.put(key, value);
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }

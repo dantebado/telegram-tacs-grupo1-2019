@@ -32,6 +32,24 @@ public class MessageProcessor {
 			case AWAITING_MENU:
 		        MenuProcessor.processUpdate(session, update, sendMessage);
 				break;
+				
+			case REPO_SEARCH_AWAITING_ID:
+				RepoDetailsProcessor.processQuery(session, update, sendMessage);
+				break;
+				
+			case FAVOURITES_AWAITING_OP:
+				FavouriteProcessor.processQuery(session, update, sendMessage);
+				break;
+			case FAVOURITES_ADD_AWAITING_ID:
+				FavouriteProcessor.addFavouriteAction(session, update, sendMessage);
+				break;
+			case FAVOURITES_REMOVE_AWAITING_ID:
+				FavouriteProcessor.removeFavouriteAction(session, update, sendMessage);
+				break;
+			case FAVOURITES_CLEAR_AWAITING_CONFIRMATION:
+				FavouriteProcessor.clearListConfirmation(session, update, sendMessage);
+				break;
+				
 			default:
 		        GenericProcessor.processUpdate(session, update, sendMessage);
 				break;

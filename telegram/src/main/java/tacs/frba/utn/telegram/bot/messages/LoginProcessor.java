@@ -5,6 +5,9 @@ import org.telegram.telegrambots.api.objects.Update;
 
 import tacs.frba.utn.telegram.bot.layouts.MenuLayout;
 import tacs.frba.utn.telegram.bot.layouts.PreInitLayout;
+import tacs.frba.utn.telegram.external.TACSConnector;
+import tacs.frba.utn.telegram.user.SessionsManager;
+import tacs.frba.utn.telegram.user.User;
 import tacs.frba.utn.telegram.user.UserSession;
 import tacs.frba.utn.telegram.user.UserSession.SessionState;
 
@@ -33,18 +36,14 @@ public class LoginProcessor {
 		String username = (String) session.getFromCache("username");
 		
 		//Realizar login
-		boolean loginSuccess = true;
+		boolean loginSuccess = TACSConnector.tryLogin(username, update.getMessage().getText());
 		
 		if(loginSuccess) {
 			message.setText("Bienvenid@ @" + username + "!! ¿Qué querés hacer hoy?");
 			session.removeFromCache("username");
 			session.removeFromCache("loginTries");
-			session.setState(SessionState.AWAITING_MENU);
-			if(session.getUser().getIsAdmin()) {
-				MenuLayout.setAdminLayout(message);
-			} else {
-				MenuLayout.setUserLayout(message);
-			}
+			session.setUser(new User(username, update.getMessage().getText(), TACSConnector.isUserAdmin(username)));			
+			MenuProcessor.refreshMainMenu(session, update, message);
 		} else {
 			int tries = (Integer) session.removeFromCache("loginTries");
 			tries++;			
@@ -59,6 +58,11 @@ public class LoginProcessor {
 				session.setState(SessionState.AWAITING_PASSWORD);
 			}
 		}
+	}
+	
+	public static void processLogout(UserSession session, Update update, SendMessage message) {
+		SessionsManager.getManager().terminateSession(update.getMessage().getChatId());
+		message.setText("Sesión cerrada. ¡Vuelva pronto!");
 	}
 
 }

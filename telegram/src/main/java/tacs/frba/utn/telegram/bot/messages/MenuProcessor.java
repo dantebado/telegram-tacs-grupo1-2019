@@ -15,19 +15,28 @@ public class MenuProcessor {
 		String messageContent = update.getMessage().getText();
 		
 		switch(messageContent) {
+			case "Ver detalles de un Repositorio":
+				RepoDetailsProcessor.processInit(session, update, message);
+				break;
+			case "Administrar mis Favoritos":
+				FavouriteProcessor.processInit(session, update, message);
+				break;
 			case "Logout":
-				SessionsManager.getManager().terminateSession(update.getMessage().getChatId());
-				message.setText("Sesión cerrada. ¡Vuelva pronto!");
+				LoginProcessor.processLogout(session, update, message);
 				break;
 			default:
 				message.setText("Opción incorrecta o no soportada. Reintente.");
-				session.setState(SessionState.AWAITING_MENU);
-				if(session.getUser().getIsAdmin()) {
-					MenuLayout.setAdminLayout(message);
-				} else {
-					MenuLayout.setUserLayout(message);
-				}
+				refreshMainMenu(session, update, message);
 				break;
+		}
+	}
+	
+	public static void refreshMainMenu(UserSession session, Update update, SendMessage message) {
+		session.setState(SessionState.AWAITING_MENU);
+		if(session.getUser().getIsAdmin()) {
+			MenuLayout.setAdminLayout(message);
+		} else {
+			MenuLayout.setUserLayout(message);
 		}
 	}
 
