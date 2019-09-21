@@ -26,6 +26,7 @@ public class UserSession {
 	private long lastQuery;
 	private User user;
 	private SessionState state;
+	private String cookie;
 	
 	HashMap<String, Object> cacheMemory;
 	
@@ -67,6 +68,14 @@ public class UserSession {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public String getCookie() {
+		return cookie;
+	}
+
+	public void setCookie(String cookie) {
+		this.cookie = cookie;
 	}
 
 }

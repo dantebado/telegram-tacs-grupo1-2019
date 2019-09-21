@@ -46,7 +46,7 @@ public class LoginProcessor {
 		String username = (String) session.getFromCache("username");
 		
 		//Realizar login
-		boolean loginSuccess = TACSConnector.tryLogin(username, update.getMessage().getText());
+		boolean loginSuccess = TACSConnector.tryLogin(username, update.getMessage().getText(), session);
 		
 		if(loginSuccess) {
 			message.setText("Bienvenid@ @" + username + "!! ¿Qué querés hacer hoy?");
@@ -72,7 +72,7 @@ public class LoginProcessor {
 	
 	public static void processLogout(UserSession session, Update update, SendMessage message) {
 		SessionsManager.getManager().terminateSession(update.getMessage().getChatId());
-		message.setText("Sesión cerrada. ¡Vuelva pronto!");
+		message.setText("@" + session.getUser().getUsername() + ", sesión cerrada. ¡Vuelva pronto!");
 	}
 
 }

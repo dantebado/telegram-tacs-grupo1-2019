@@ -5,11 +5,12 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 
 import tacs.frba.utn.telegram.bot.Bot;
+import tacs.frba.utn.telegram.external.TACSConnector;
 
 public class App 
 {
     public static void main( String[] args )
-    {
+    {    	
     	ApiContextInitializer.init();
         TelegramBotsApi telegramBotApi = new TelegramBotsApi();
         try {
