@@ -5,6 +5,11 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import tacs.frba.utn.telegram.bot.messages.MessageProcessor;
+import tacs.frba.utn.telegram.user.SessionsManager;
+import tacs.frba.utn.telegram.user.User;
+import tacs.frba.utn.telegram.user.UserSession;
+
 public class Bot extends TelegramLongPollingBot {
 	
 	public static final String TELEGRAM_TOKEN = "854487790:AAEgBU3a_4QUDL8Z184uq-bUf70Sx2Kq8jk";
@@ -21,18 +26,19 @@ public class Bot extends TelegramLongPollingBot {
 
 	public void onUpdateReceived(Update update) {
 		System.out.println("[" + update.getMessage().getChatId() + "]:::" + update.getMessage().getText());
-		sendMsg(update.getMessage().getChatId().toString(), "Este es el bot de TACS. Pronto estará disponible.");
+		
+		Long chatId = update.getMessage().getChatId();
+		UserSession session = SessionsManager.getManager().findSession(chatId);
+		if(session == null) {
+			//User is not known
+			session = SessionsManager.getManager().registerSession(chatId, new UserSession(chatId, null));
+		}
+		
+		try {
+			execute(MessageProcessor.processUpdate(session, update));
+		} catch (TelegramApiException e) {
+			e.printStackTrace();
+		}
 	}
-	
-	public synchronized void sendMsg(String chatId, String responseMessage) {		
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(responseMessage);
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-        }
-    }
 
 }
