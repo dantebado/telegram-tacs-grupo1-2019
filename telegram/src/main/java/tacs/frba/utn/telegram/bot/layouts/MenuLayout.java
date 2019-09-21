@@ -35,6 +35,10 @@ public class MenuLayout {
         replyKeyboardMarkup.setOneTimeKeyboard(true);
         
         ArrayList<KeyboardRow> keyboard = new ArrayList<KeyboardRow>();
+        keyboard.add(LayoutUtils.buildRowWithSingleButton("Ver detalles de un Usuario"));
+        keyboard.add(LayoutUtils.buildRowWithSingleButton("Comparar Favoritos de dos Usuarios"));
+        keyboard.add(LayoutUtils.buildRowWithSingleButton("Ver popularidad de un Repositorio"));
+        keyboard.add(LayoutUtils.buildRowWithSingleButton("Ver Repositorios registrados"));
         keyboard.add(LayoutUtils.buildRowWithSingleButton("Logout"));
         
         replyKeyboardMarkup.setKeyboard(keyboard);

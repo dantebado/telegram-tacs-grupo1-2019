@@ -52,6 +52,25 @@ public class MessageProcessor {
 				FavouriteProcessor.clearListConfirmation(session, update, sendMessage);
 				break;
 				
+			case ADMIN_VIEW_USER_AWAITING_ID:
+				UserProcessor.processUserQuery(session, update, sendMessage);
+				break;
+				
+			case ADMIN_COMPARE_AWAITING_ONE:
+				FavouritesComparatorProcessor.processAskAnother(session, update, sendMessage);
+				break;
+			case ADMIN_COMPARE_AWAITING_TWO:
+				FavouritesComparatorProcessor.processComparate(session, update, sendMessage);
+				break;
+				
+			case ADMIN_REPO_AWAITING_ID:
+				RepoPopularityProcessor.processQuery(session, update, sendMessage);
+				break;
+				
+			case ADMIN_REPO_REGISTRATION_AWAITING_DATE:
+				RepoRegistrationProcessor.processQuery(session, update, sendMessage);
+				break;
+				
 			default:
 		        GenericProcessor.processUpdate(session, update, sendMessage);
 				break;

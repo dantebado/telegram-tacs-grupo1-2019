@@ -12,8 +12,17 @@ import tacs.frba.utn.telegram.user.UserSession;
 
 public class Bot extends TelegramLongPollingBot {
 	
+	private static Bot instance;
+	
 	public static final String TELEGRAM_TOKEN = "854487790:AAEgBU3a_4QUDL8Z184uq-bUf70Sx2Kq8jk";
 	public static final String TELEGRAM_NAME= "TACS";
+	
+	public static Bot getBot() {
+		if(instance == null) {
+			instance = new Bot();
+		}
+		return instance;
+	}
 
 	public String getBotUsername() {
 		return TELEGRAM_NAME;
@@ -33,7 +42,6 @@ public class Bot extends TelegramLongPollingBot {
 			//User is not known
 			session = SessionsManager.getManager().registerSession(chatId, new UserSession(chatId, null));
 		}
-		
 		try {
 			execute(MessageProcessor.processUpdate(session, update));
 		} catch (TelegramApiException e) {

@@ -1,8 +1,11 @@
 package tacs.frba.utn.telegram.bot.messages;
 
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import tacs.frba.utn.telegram.bot.Bot;
 import tacs.frba.utn.telegram.bot.layouts.MenuLayout;
 import tacs.frba.utn.telegram.bot.layouts.PreInitLayout;
 import tacs.frba.utn.telegram.external.TACSConnector;
@@ -20,7 +23,7 @@ public class LoginProcessor {
 	}
 	
 	public static void processUpdateOnInit(UserSession session, Update update, SendMessage message) {
-		message.setText("Ingrese su nombre de usuario:");
+		message.setText("Ingresá su nombre de usuario:");
 		session.setState(SessionState.AWAITING_USERNAME);
 	}
 	
@@ -33,6 +36,13 @@ public class LoginProcessor {
 	}
 	
 	public static void processUpdateOnPassword(UserSession session, Update update, SendMessage message) {
+		DeleteMessage dm = new DeleteMessage(update.getMessage().getChatId(), update.getMessage().getMessageId());
+		try {
+			Bot.getBot().execute(dm);
+		} catch (TelegramApiException e) {
+			e.printStackTrace();
+		}
+		
 		String username = (String) session.getFromCache("username");
 		
 		//Realizar login

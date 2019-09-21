@@ -7,7 +7,15 @@ public class TACSConnector {
 	}
 	
 	public static Boolean isUserAdmin(String username) {
-		return false;
+		return true;
+	}
+	
+	public static Boolean userExists(String id) {
+		return true;
+	}
+	
+	public static Boolean repoExist(String repo) {
+		return true;
 	}
 
 }

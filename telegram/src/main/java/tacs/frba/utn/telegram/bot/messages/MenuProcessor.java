@@ -21,9 +21,25 @@ public class MenuProcessor {
 			case "Administrar mis Favoritos":
 				FavouriteProcessor.processInit(session, update, message);
 				break;
+				
+			case "Ver detalles de un Usuario":
+				UserProcessor.processUserDetails(session, update, message);
+				break;
+			case "Comparar Favoritos de dos Usuarios":
+				FavouritesComparatorProcessor.processAskOne(session, update, message);;
+				break;
+			case "Ver popularidad de un Repositorio":
+				RepoPopularityProcessor.processAskRepo(session, update, message);
+				break;
+				
+			case "Ver Repositorios registrados":
+				RepoRegistrationProcessor.processMenu(session, update, message);
+				break;
+				
 			case "Logout":
 				LoginProcessor.processLogout(session, update, message);
-				break;
+				break;				
+				
 			default:
 				message.setText("Opción incorrecta o no soportada. Reintente.");
 				refreshMainMenu(session, update, message);
