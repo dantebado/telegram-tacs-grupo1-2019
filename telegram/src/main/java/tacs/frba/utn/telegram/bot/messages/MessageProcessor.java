@@ -16,6 +16,8 @@ public class MessageProcessor {
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(update.getMessage().getChatId());
         
+        session.refreshLastQuery();
+        
 		switch(session.getState()) {
 			case AWAITING_PRE_INIT:
 		        LoginProcessor.processUpdateOnPreInit(session, update, sendMessage);
