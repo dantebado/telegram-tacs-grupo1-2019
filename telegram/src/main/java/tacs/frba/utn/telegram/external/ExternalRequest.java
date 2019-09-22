@@ -35,7 +35,7 @@ public class ExternalRequest {
 	            responseBody.write(buffer, 0, bytesRead);
 	        }
 	        
-	        response = new ExternalResponse(con.getResponseCode(), responseBody.toString());
+	        response = new ExternalResponse(con.getResponseCode(), responseBody.toString(), con.getHeaderField("Set-Cookie"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

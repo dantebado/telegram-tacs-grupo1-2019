@@ -11,7 +11,7 @@ public class TACSConnector {
 		String data = JsonTransformer.getGson().toJson(user);
 		ExternalResponse reqResponse = ExternalRequest.getAPI("login", null, data);
 		
-		session.setCookie(reqResponse.getResponseJson().get("cookie").getAsString());
+		session.setCookie(reqResponse.getCookie("id"));
 		System.out.println(session.getCookie());
 		
 		return reqResponse.getResponseJson().get("success").getAsBoolean();
