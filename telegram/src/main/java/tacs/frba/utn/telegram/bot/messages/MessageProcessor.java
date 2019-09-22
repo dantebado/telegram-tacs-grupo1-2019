@@ -23,7 +23,17 @@ public class MessageProcessor {
 		        LoginProcessor.processUpdateOnPreInit(session, update, sendMessage);
 				break;
 			case AWAITING_INIT:
-		        LoginProcessor.processUpdateOnInit(session, update, sendMessage);
+				switch(update.getMessage().getText()) {
+					case "Login":
+				        LoginProcessor.processUpdateOnInit(session, update, sendMessage);
+						break;
+					case "Registrarse":
+						SingupProcessor.processUpdateOnInit(session, update, sendMessage);
+						break;
+					default:
+				        GenericProcessor.processUpdate(session, update, sendMessage);
+						break;
+				}
 				break;
 			case AWAITING_USERNAME:
 		        LoginProcessor.processUpdateOnUsername(session, update, sendMessage);
@@ -69,6 +79,19 @@ public class MessageProcessor {
 				
 			case ADMIN_REPO_REGISTRATION_AWAITING_DATE:
 				RepoRegistrationProcessor.processQuery(session, update, sendMessage);
+				break;
+				
+			case SINGUP_AWAITING_FIRSTNAME:
+				SingupProcessor.processUpdateFirstName(session, update, sendMessage);
+				break;
+			case SINGUP_AWAITING_LASTNAME:
+				SingupProcessor.processUpdateLastName(session, update, sendMessage);
+				break;
+			case SINGUP_AWAITING_USERNAME:
+				SingupProcessor.processUpdateUserName(session, update, sendMessage);
+				break;
+			case SINGUP_AWAITING_PASSWORD:
+				SingupProcessor.processUpdatePassword(session, update, sendMessage);
 				break;
 				
 			default:

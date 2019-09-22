@@ -2,8 +2,11 @@ package tacs.frba.utn.telegram.user;
 
 public class User {
 	
-	private String username;
-	private String pass;
+	public String name;
+    public String lastName;
+    public String username;
+    public String pass;
+    
 	private Boolean isAdmin;
 	
 	public User(String username, String pass, Boolean isAdmin) {
@@ -29,6 +32,12 @@ public class User {
 	}
 	public void setIsAdmin(Boolean isAdmin) {
 		this.isAdmin = isAdmin;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 }

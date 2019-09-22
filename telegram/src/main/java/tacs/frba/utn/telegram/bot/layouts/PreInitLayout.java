@@ -21,6 +21,7 @@ public class PreInitLayout {
         
         ArrayList<KeyboardRow> keyboard = new ArrayList<KeyboardRow>();
         keyboard.add(LayoutUtils.buildRowWithSingleButton("Login"));
+        keyboard.add(LayoutUtils.buildRowWithSingleButton("Registrarse"));
         
         replyKeyboardMarkup.setKeyboard(keyboard);
     }

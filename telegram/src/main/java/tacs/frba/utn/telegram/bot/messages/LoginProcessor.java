@@ -23,7 +23,7 @@ public class LoginProcessor {
 	}
 	
 	public static void processUpdateOnInit(UserSession session, Update update, SendMessage message) {
-		message.setText("Ingresá su nombre de usuario:");
+		message.setText("Ingresá tu nombre de usuario:");
 		session.setState(SessionState.AWAITING_USERNAME);
 	}
 	

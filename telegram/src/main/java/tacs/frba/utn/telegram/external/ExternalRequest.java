@@ -34,7 +34,6 @@ public class ExternalRequest {
 	        while ((bytesRead = stream.read(buffer)) > 0) {
 	            responseBody.write(buffer, 0, bytesRead);
 	        }
-	        System.out.println("Response: " + responseBody.toString());
 	        
 	        response = new ExternalResponse(con.getResponseCode(), responseBody.toString());
 		} catch (Exception e) {

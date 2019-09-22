@@ -28,5 +28,9 @@ public class TACSConnector {
 	public static Boolean repoExist(String repo) {
 		return true;
 	}
+	
+	public static Boolean existsUserWithUsername(String username) {
+		return false;
+	}
 
 }
