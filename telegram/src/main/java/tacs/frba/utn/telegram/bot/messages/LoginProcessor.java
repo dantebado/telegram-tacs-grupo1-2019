@@ -8,6 +8,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import tacs.frba.utn.telegram.bot.Bot;
 import tacs.frba.utn.telegram.bot.layouts.MenuLayout;
 import tacs.frba.utn.telegram.bot.layouts.PreInitLayout;
+import tacs.frba.utn.telegram.external.ExternalResponse;
 import tacs.frba.utn.telegram.external.TACSConnector;
 import tacs.frba.utn.telegram.user.SessionsManager;
 import tacs.frba.utn.telegram.user.User;
@@ -46,15 +47,15 @@ public class LoginProcessor {
 		String username = (String) session.getFromCache("username");
 		
 		//Realizar login
-		boolean loginSuccess = TACSConnector.tryLogin(username, update.getMessage().getText(), session);
+		ExternalResponse apiResponse = TACSConnector.tryLogin(username, update.getMessage().getText(), session);
 		
-		if(loginSuccess) {
+		if(apiResponse.getCode() == 200) {
 			message.setText("Bienvenid@ @" + username + "!! ¿Qué querés hacer hoy?");
 			session.removeFromCache("username");
 			session.removeFromCache("loginTries");
 			session.setUser(new User(username, update.getMessage().getText(), TACSConnector.isUserAdmin(username)));			
 			MenuProcessor.refreshMainMenu(session, update, message);
-		} else {
+		} else if(apiResponse.getCode() == 401) {
 			int tries = (Integer) session.removeFromCache("loginTries");
 			tries++;			
 			if(tries >= 3) {
@@ -67,12 +68,23 @@ public class LoginProcessor {
 				message.setText("La contaseña ingresada no es correcta, reintentá:");
 				session.setState(SessionState.AWAITING_PASSWORD);
 			}
+		} else {
+			message.setText("Se produjo un error.");
+			PreInitLayout.setLayout(message);
+			session.setState(SessionState.AWAITING_INIT);
 		}
 	}
 	
 	public static void processLogout(UserSession session, Update update, SendMessage message) {
-		SessionsManager.getManager().terminateSession(update.getMessage().getChatId());
-		message.setText("@" + session.getUser().getUsername() + ", sesión cerrada. ¡Vuelva pronto!");
+		ExternalResponse apiResponse = TACSConnector.tryLogout(session);
+		
+		if(apiResponse.getCode() == 200) {
+			SessionsManager.getManager().terminateSession(update.getMessage().getChatId());
+			message.setText("@" + session.getUser().getUsername() + ", sesión cerrada. ¡Vuelva pronto!");
+		} else {
+			SessionsManager.getManager().terminateSession(update.getMessage().getChatId());
+			message.setText("Se produjo un error al cerrar la sesión.");
+		}
 	}
 
 }

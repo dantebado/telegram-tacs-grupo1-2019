@@ -8,7 +8,7 @@ import tacs.frba.utn.telegram.user.UserSession;
 public class GenericProcessor {
 	
 	public static void processUpdate(UserSession session, Update update, SendMessage message) {
-		message.setText("Inicializando la sesion");
+		message.setText("Se produjo un error. Verifique que no tenga botones para presionar en la interfaz.");
 	}
 
 }

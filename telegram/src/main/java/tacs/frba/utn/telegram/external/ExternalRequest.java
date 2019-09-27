@@ -25,9 +25,16 @@ public class ExternalRequest {
 		        con.setRequestProperty("Cookie", "id="+sessionCookie);
 	        }
 	        con.setDoOutput(true);
-	        con.getOutputStream().write(body.getBytes("UTF-8"));
+	        if(body != null) {
+		        con.getOutputStream().write(body.getBytes("UTF-8"));	
+	        }
 	        
-	        InputStream stream = con.getInputStream();
+	        InputStream stream = null;
+	        if(con.getResponseCode() < 400) {
+	        	stream = con.getInputStream();
+	        } else {
+	        	stream = con.getErrorStream();
+	        }
 	        ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
 	        byte buffer[] = new byte[1024];
 	        int bytesRead = 0;

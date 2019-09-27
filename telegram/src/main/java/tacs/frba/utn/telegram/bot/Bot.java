@@ -33,9 +33,7 @@ public class Bot extends TelegramLongPollingBot {
 		return TELEGRAM_TOKEN;
 	}
 
-	public void onUpdateReceived(Update update) {
-		System.out.println("[" + update.getMessage().getChatId() + "]:::" + update.getMessage().getText());
-		
+	public void onUpdateReceived(Update update) {		
 		Long chatId = update.getMessage().getChatId();
 		UserSession session = SessionsManager.getManager().findSession(chatId);
 		if(session == null) {

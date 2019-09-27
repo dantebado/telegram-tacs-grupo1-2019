@@ -12,6 +12,7 @@ import tacs.frba.utn.telegram.user.UserSession.SessionState;
 public class MessageProcessor {
 
 	public static SendMessage processUpdate(UserSession session, Update update) {
+		System.out.println("[" + update.getMessage().getChatId() + "]::[" + update.getMessage().getText() + "]::[" + session.getState().name() + "]");
 		SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(update.getMessage().getChatId());
