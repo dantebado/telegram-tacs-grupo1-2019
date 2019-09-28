@@ -1,5 +1,6 @@
 package tacs.frba.utn.telegram.external;
 
+import tacs.frba.utn.telegram.user.User;
 import tacs.frba.utn.telegram.user.UserSession;
 import utils.JsonTransformer;
 
@@ -16,20 +17,33 @@ public class TACSConnector {
 		return ExternalRequest.postAPI("logout", null, null);
 	}
 	
-	public static Boolean isUserAdmin(String username) {
-		return false;
+	public static Boolean isUserAdmin(String username, UserSession adminSession) {
+		return getDataOnUser(username, adminSession).getCode() == 200;
 	}
 	
-	public static Boolean userExists(String id) {
-		return true;
+	public static ExternalResponse getRepoAnalytics(String dateString, UserSession adminSession) {
+		return ExternalRequest.getAPI("admin/analytics?fechaDesde=" + dateString, adminSession.getCookie(), null);
 	}
 	
-	public static Boolean repoExist(String repo) {
-		return true;
+	public static Boolean userExists(String username, UserSession session) {
+		return getDataOnUser(username, session).getCode() == 200;
 	}
-	
-	public static Boolean existsUserWithUsername(String username) {
-		return false;
+
+	public static ExternalResponse getDataOnUser(String user, UserSession session) {
+		return ExternalRequest.getAPI("admin/users/" + user, session.getCookie(), null);
+	}
+
+	public static ExternalResponse trySignup(User user) {
+		String data = JsonTransformer.getGson().toJson(user);
+		return ExternalRequest.postAPI("signup", null, data);
+	}
+
+	public static ExternalResponse queryRepoAsAdmin(String repo, UserSession session) {
+		return ExternalRequest.getAPI("admin/repositories/" + repo, session.getCookie(), null);
+	}
+
+	public static ExternalResponse getRepoDetails(String repoId, UserSession session) {
+		return ExternalRequest.getAPI("user/repositories/" + repoId, session.getCookie(), null);
 	}
 
 }

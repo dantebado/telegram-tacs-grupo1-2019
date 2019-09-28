@@ -51,9 +51,10 @@ public class LoginProcessor {
 		
 		if(apiResponse.getCode() == 200) {
 			message.setText("Bienvenid@ @" + username + "!! ¿Qué querés hacer hoy?");
+			session.setCookie(apiResponse.getCookie("id"));
 			session.removeFromCache("username");
 			session.removeFromCache("loginTries");
-			session.setUser(new User(username, update.getMessage().getText(), TACSConnector.isUserAdmin(username)));			
+			session.setUser(new User(username, update.getMessage().getText(), TACSConnector.isUserAdmin(username, session)));			
 			MenuProcessor.refreshMainMenu(session, update, message);
 		} else if(apiResponse.getCode() == 401) {
 			int tries = (Integer) session.removeFromCache("loginTries");

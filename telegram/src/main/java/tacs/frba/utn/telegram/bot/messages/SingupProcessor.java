@@ -39,14 +39,9 @@ public class SingupProcessor {
 	public static void processUpdateUserName(UserSession session, Update update, SendMessage message) {
 		String username = update.getMessage().getText();
 		
-		if(TACSConnector.existsUserWithUsername(username)) {
-			message.setText("¡Qué pena! Ya existe un usuario con ese nombre, reintentá con uno diferente:");
-			session.setState(SessionState.SINGUP_AWAITING_USERNAME);
-		} else {
-			session.addToCache("username", username);
-			message.setText("¡Excelente nombre! Por último decinos con qué contraseña querés iniciar sesión:");
-			session.setState(SessionState.SINGUP_AWAITING_PASSWORD);
-		}		
+		session.addToCache("username", username);
+		message.setText("¡Excelente nombre! Por último decinos con qué contraseña querés iniciar sesión:");
+		session.setState(SessionState.SINGUP_AWAITING_PASSWORD);
 	}
 	
 	public static void processUpdatePassword(UserSession session, Update update, SendMessage message) {
@@ -59,13 +54,19 @@ public class SingupProcessor {
 		user.setName(firstname);
 		user.setLastName(lastname);
 		
-		String requestData = JsonTransformer.getGson().toJson(user);
+		ExternalResponse result = TACSConnector.trySignup(user);
+		if(result.getCode() == 409) {
+			session.addToCache("firstname", firstname);
+			session.addToCache("lastname", lastname);
+			message.setText("Ese nombre de usuario no está disponible. Intentá con uno nuevo. Ingresalo ahora.");
+			PreInitLayout.setLayout(message);
+			session.setState(SessionState.SINGUP_AWAITING_USERNAME);
+		} else {
+			message.setText("¡Tu cuenta ya fue creada! Te invitamos a iniciar sesión y comenzar a utilizar la app.");
+			PreInitLayout.setLayout(message);
+			session.setState(SessionState.AWAITING_INIT);
+		}
 		
-		ExternalResponse result = ExternalRequest.postAPI("signup", null, requestData);
-		
-		message.setText("¡Tu cuenta ya fue creada! Te invitamos a iniciar sesión y comenzar a utilizar la app\n\n" + result.getResponseBody());
-		PreInitLayout.setLayout(message);
-		session.setState(SessionState.AWAITING_INIT);
 	}
 
 }

@@ -19,7 +19,7 @@ public class FavouritesComparatorProcessor {
 		String oneUser = update.getMessage().getText();
 		
 		if(!oneUser.equalsIgnoreCase("cancelar")) {
-			if(TACSConnector.userExists(oneUser)) {
+			if(TACSConnector.userExists(oneUser, session)) {
 				session.addToCache("comparator_1", oneUser);
 				message.setText("¿Contra qué usuario querés comparar a " + oneUser + "? También podés *cancelar* la operación.");
 				session.setState(SessionState.ADMIN_COMPARE_AWAITING_TWO);
@@ -37,7 +37,7 @@ public class FavouritesComparatorProcessor {
 		String anotherUser = update.getMessage().getText();
 		
 		if(!anotherUser.equalsIgnoreCase("cancelar")) {
-			if(TACSConnector.userExists(anotherUser)) {
+			if(TACSConnector.userExists(anotherUser, session)) {
 				String oneUser = (String) session.removeFromCache("comparator_1");
 				
 				if(oneUser.equals(anotherUser)) {

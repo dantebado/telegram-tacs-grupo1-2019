@@ -1,9 +1,15 @@
 package tacs.frba.utn.telegram.bot.messages;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
 import tacs.frba.utn.telegram.bot.layouts.RepoRegistrationLayout;
+import tacs.frba.utn.telegram.external.ExternalResponse;
+import tacs.frba.utn.telegram.external.TACSConnector;
 import tacs.frba.utn.telegram.user.UserSession;
 import tacs.frba.utn.telegram.user.UserSession.SessionState;
 
@@ -23,29 +29,81 @@ public class RepoRegistrationProcessor {
 			MenuProcessor.refreshMainMenu(session, update, message);
 		} else {
 			String res_str = "Los repostorios registrados desde ";
+			Calendar calendar = Calendar.getInstance();
+			
+			Calendar todayAux = calendar.getInstance();
+			Boolean validOption = true;
+			
 			switch(date) {
 				case "El día de hoy":
-					res_str += "el día de hoy son ###";
+					calendar.set(Calendar.YEAR, todayAux.get(Calendar.YEAR));
+					calendar.set(Calendar.MONTH, todayAux.get(Calendar.MONTH));
+					calendar.set(Calendar.DAY_OF_MONTH, todayAux.get(Calendar.DAY_OF_MONTH));
+					
+					res_str += "el día de hoy son ";
 					break;
 				case "Los últimos tres días":
-					res_str += "hace tres días son ###";
+					{
+						long todayTimestamp = todayAux.getTimeInMillis();
+						long finalTimestamp = todayTimestamp - (1000 * 60 * 60 * 24 * 3);
+						
+						calendar.setTimeInMillis(finalTimestamp);					
+						res_str += "hace tres días son ";
+					}
 					break;
 				case "La última semana":
-					res_str += "la semana pasada son ###";
+					{
+						long todayTimestamp = todayAux.getTimeInMillis();
+						long finalTimestamp = todayTimestamp - (1000 * 60 * 60 * 24 * todayAux.get(Calendar.DAY_OF_WEEK));
+						
+						calendar.setTimeInMillis(finalTimestamp);	
+						res_str += "la semana pasada son ";
+					}
 					break;
 				case "El último mes":
-					res_str += "el último mes son ###";
+					{
+						long todayTimestamp = todayAux.getTimeInMillis();
+						long finalTimestamp = todayTimestamp - (1000 * 60 * 60 * 24 * todayAux.get(Calendar.DAY_OF_MONTH));
+						
+						calendar.setTimeInMillis(finalTimestamp);	
+						res_str += "el último mes son ";
+					}
 					break;
 				case "El inicio de los tiempos":
-					res_str += "el inicio de los tiempos son ###";
+					{
+						long finalTimestamp = 0;
+						
+						calendar.setTimeInMillis(finalTimestamp);	
+						res_str += "el último mes son ";
+					}
+					res_str += "el inicio de los tiempos son ";
 					break;
 				default:
 					res_str = "La fecha ingresada no es válida, reintentá.";
 					message.setText(res_str);
 					session.setState(SessionState.ADMIN_REPO_REGISTRATION_AWAITING_DATE);
 					RepoRegistrationLayout.setDatesLayout(message);
+					validOption = false;
 					return;
 			}
+			
+			if(validOption) {				
+				calendar.set(Calendar.HOUR_OF_DAY, 0);
+				calendar.set(Calendar.MINUTE, 0);
+				calendar.set(Calendar.SECOND, 0);
+				calendar.set(Calendar.MILLISECOND, 0);
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
+				
+				String queryStringDate = dateFormat.format(calendar.getTime());
+				ExternalResponse apiResponse = TACSConnector.getRepoAnalytics(queryStringDate, session);
+				if(apiResponse.getCode() == 200) {
+					res_str += apiResponse.getResponseJson().get("repository_counter").getAsInt();
+				} else {
+					res_str = "Error en el request";
+				}
+			}
+			
 			res_str += ". ¿Qué hacemos a continuación?";
 			message.setText(res_str);
 			MenuProcessor.refreshMainMenu(session, update, message);

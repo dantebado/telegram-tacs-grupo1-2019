@@ -3,6 +3,7 @@ package tacs.frba.utn.telegram.bot.messages;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import tacs.frba.utn.telegram.external.ExternalResponse;
 import tacs.frba.utn.telegram.external.TACSConnector;
 import tacs.frba.utn.telegram.user.UserSession;
 import tacs.frba.utn.telegram.user.UserSession.SessionState;
@@ -21,8 +22,10 @@ public class RepoPopularityProcessor {
 			message.setText("La consulta fue cancelada. ¿Cuál es la próxima operación?");
 			MenuProcessor.refreshMainMenu(session, update, message);
 		} else {
-			if(TACSConnector.repoExist(repo)) {				
-				message.setText("Los usuarios que añadieron el repo " + repo + " a sus favoritos son .....\n¿Qué hacemos a continuación?");
+			ExternalResponse apiResponse = TACSConnector.queryRepoAsAdmin(repo, session);
+						
+			if(apiResponse.getCode() == 200) {				
+				message.setText("Los usuarios que añadieron el repo a sus favoritos son " + apiResponse.getResponseJson().get("userAmmount").getAsInt() + "\n¿Qué hacemos a continuación?");
 				MenuProcessor.refreshMainMenu(session, update, message);				
 			} else {
 				message.setText("El repo ingresado no existe, reintentá. Podés también *cancelar* la consulta.");
