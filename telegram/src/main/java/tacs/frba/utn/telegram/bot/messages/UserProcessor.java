@@ -3,7 +3,10 @@ package tacs.frba.utn.telegram.bot.messages;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.JsonAdapter;
 
 import tacs.frba.utn.telegram.bot.layouts.FavouriteLayout;
 import tacs.frba.utn.telegram.external.ExternalResponse;
@@ -32,11 +35,19 @@ public class UserProcessor {
 					message.setText("El usuario " + user + " no existe.\nPodés continuar operando.");
 				} else {
 					JsonObject userData = apiResponse.getResponseJson();
-					String dataShow = "Username: " + userData.get("username").getAsString() +
-							"\nÚltimo acceso: " + userData.get("lastAccessTime").getAsString() +
-							"\n";
+					JsonArray languagesArr = userData.get("languages").getAsJsonArray();
+					String dataShow = "*Username:* " + userData.get("username").getAsString() +
+							"\n*Último acceso:* " + userData.get("lastAccessTime").getAsString() +
+							"\n*Cantidad de repositorios favoritos:* " + userData.get("favourite_count").getAsString() +
+							"\n*Lenguajes favoritos:*";
+					for (JsonElement language : languagesArr) {
+						dataShow += " " + language.getAsString();
+					}
+					if(languagesArr.size() == 0) {
+						dataShow += " No posee";
+					}
 
-					message.setText("Detalles de usuario\n" + dataShow+ "\nPodés continuar operando.");
+					message.setText("Detalles de usuario\n" + dataShow+ "\n\nPodés continuar operando.");
 				}
 				
 				MenuProcessor.refreshMainMenu(session, update, message);
