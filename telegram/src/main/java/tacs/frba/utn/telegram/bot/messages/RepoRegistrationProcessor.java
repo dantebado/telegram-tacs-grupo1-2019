@@ -54,7 +54,7 @@ public class RepoRegistrationProcessor {
 				case "La última semana":
 					{
 						long todayTimestamp = todayAux.getTimeInMillis();
-						long finalTimestamp = todayTimestamp - (1000 * 60 * 60 * 24 * todayAux.get(Calendar.DAY_OF_WEEK));
+						long finalTimestamp = todayTimestamp - (1000 * 60 * 60 * 24 * (todayAux.get(Calendar.DAY_OF_WEEK) + 7));
 						
 						calendar.setTimeInMillis(finalTimestamp);	
 						res_str += "la semana pasada son ";
@@ -63,9 +63,18 @@ public class RepoRegistrationProcessor {
 				case "El último mes":
 					{
 						long todayTimestamp = todayAux.getTimeInMillis();
-						long finalTimestamp = todayTimestamp - (1000 * 60 * 60 * 24 * todayAux.get(Calendar.DAY_OF_MONTH));
+						long finalTimestamp = todayTimestamp;
+						for (int i = 0; i < 60; i++) {
+							finalTimestamp -= (1000 * 60 * 24 * todayAux.get(Calendar.DAY_OF_MONTH));
+						}
 						
 						calendar.setTimeInMillis(finalTimestamp);	
+						int daysLeft = calendar.get(Calendar.DAY_OF_MONTH) - 1;
+						for (int i = 0; i < 60; i++) {
+							finalTimestamp -= (1000 * 60 * 24 * daysLeft);
+						}
+						calendar.setTimeInMillis(finalTimestamp);	
+						
 						res_str += "el último mes son ";
 					}
 					break;
