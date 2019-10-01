@@ -14,7 +14,7 @@ public class TACSConnector {
 	}
 	
 	public static ExternalResponse tryLogout(UserSession session) {
-		return ExternalRequest.postAPI("logout", null, null);
+		return ExternalRequest.postAPI("logout", session.getCookie(), null);
 	}
 	
 	public static Boolean isUserAdmin(String username, UserSession adminSession) {
@@ -48,6 +48,56 @@ public class TACSConnector {
 	
 	public static ExternalResponse getFavouritesDetails(UserSession session) {
 		return ExternalRequest.getAPI("user/favourites", session.getCookie(), null);
+	}
+	
+	public static ExternalResponse getAdvancedSearch(UserSession session) {
+		String query = (String)session.getFromCache("query");
+		String name = (String)session.getFromCache("name");
+		String language = (String)session.getFromCache("language");
+		String sort = (String)session.getFromCache("sort");
+		String order = (String)session.getFromCache("order");
+		
+		String uri = "user/repositories?";
+		boolean atLeastOneField = false;
+		
+		if(query != null) {
+			atLeastOneField = true;
+			uri += "q=" + query;
+		}
+		if(name != null) {
+			if(atLeastOneField) {
+				uri += "&";
+			}else {
+				atLeastOneField = true;
+			}
+			uri += "name=" + name;
+		}
+		if(language != null) {
+			if(atLeastOneField) {
+				uri += "&";
+			}else {
+				atLeastOneField = true;
+			}
+			uri += "language=" + language;
+		}
+		if(sort != null) {
+			if(atLeastOneField) {
+				uri += "&";
+			}else {
+				atLeastOneField = true;
+			}
+			uri += "sort=" + sort;
+		}
+		if(order != null) {
+			if(atLeastOneField) {
+				uri += "&";
+			}else {
+				atLeastOneField = true;
+			}
+			uri += "order=" + order;
+		}
+
+		return ExternalRequest.getAPI(uri, session.getCookie(), null);
 	}
 
 }

@@ -21,11 +21,16 @@ public class ExternalResponse {
 			this.responseJson = JsonTransformer.getGson().fromJson(body, JsonObject.class);	
 		}
 		cookies = new HashMap<>();
-		if(setCookies != null) {
-			for(String cookie : setCookies.split(";")) {
-				cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
+		try {
+			if(setCookies != null) {
+				for(String cookie : setCookies.split(";")) {
+					cookies.put(cookie.split("=")[0], cookie.split("=")[1]);
+				}
 			}
+		} catch (Exception e) {
+			
 		}
+		
 	}
 
 	public int getCode() {

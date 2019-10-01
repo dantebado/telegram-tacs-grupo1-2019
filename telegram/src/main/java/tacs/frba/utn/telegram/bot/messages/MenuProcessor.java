@@ -36,6 +36,10 @@ public class MenuProcessor {
 				RepoRegistrationProcessor.processMenu(session, update, message);
 				break;
 				
+			case "Realizar una Búsqueda Avanzada":
+				AdvancedSearchProcessor.processAdvancedSearchInit(session, update, message);
+				break;
+				
 			case "Logout":
 				LoginProcessor.processLogout(session, update, message);
 				break;				

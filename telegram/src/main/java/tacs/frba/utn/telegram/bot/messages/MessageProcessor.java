@@ -95,6 +95,23 @@ public class MessageProcessor {
 				SingupProcessor.processUpdatePassword(session, update, sendMessage);
 				break;
 				
+			case ADVANCED_SEARCH_AWAITING_QUERY:
+				AdvancedSearchProcessor.processAdvancedSearchQuery(session, update, sendMessage);
+				break;
+			case ADVANCED_SEARCH_AWAITING_NAME:
+				AdvancedSearchProcessor.processAdvancedSearchName(session, update, sendMessage);
+				break;
+			case ADVANCED_SEARCH_AWAITING_LANGUAGE:
+				AdvancedSearchProcessor.processAdvancedSearchLanguage(session, update, sendMessage);
+				break;
+			case ADVANCED_SEARCH_AWAITING_SORT:
+				AdvancedSearchProcessor.processAdvancedSearchSort(session, update, sendMessage);
+				break;
+			case ADVANCED_SEARCH_AWAITING_ORDER:
+				AdvancedSearchProcessor.processAdvancedSearchOrder(session, update, sendMessage);
+				break;
+				
+				
 			default:
 		        GenericProcessor.processUpdate(session, update, sendMessage);
 				break;
