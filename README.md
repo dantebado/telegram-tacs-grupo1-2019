@@ -1,5 +1,5 @@
 # telegram-tacs-grupo1-2019
-## [TACS-2019](https://github.com/nicokim/TACS-2019) subproyect
+## [TACS-2019](https://github.com/nicokim/TACS-2019) subproject
 
 ### Instrucciones de uso
 
