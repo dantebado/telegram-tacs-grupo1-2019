@@ -2,6 +2,7 @@ package tacs.frba.utn.telegram.external;
 
 import java.util.HashMap;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import utils.JsonTransformer;
@@ -17,7 +18,7 @@ public class ExternalResponse {
 		this.code = code;
 		this.responseBody = body;
 		if(body != null) {
-			this.responseJson = JsonTransformer.getGson().fromJson(body, JsonObject.class);			
+			this.responseJson = JsonTransformer.getGson().fromJson(body, JsonObject.class);	
 		}
 		cookies = new HashMap<>();
 		if(setCookies != null) {
@@ -49,6 +50,10 @@ public class ExternalResponse {
 
 	public void setResponseJson(JsonObject responseJson) {
 		this.responseJson = responseJson;
+	}
+	
+	public JsonElement getResponseData() {
+		return responseJson.get("data");
 	}
 	
 	public String getCookie(String cookieName) {

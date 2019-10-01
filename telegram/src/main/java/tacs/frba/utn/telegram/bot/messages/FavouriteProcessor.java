@@ -3,7 +3,13 @@ package tacs.frba.utn.telegram.bot.messages;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import tacs.frba.utn.telegram.bot.layouts.FavouriteLayout;
+import tacs.frba.utn.telegram.external.ExternalResponse;
+import tacs.frba.utn.telegram.external.TACSConnector;
 import tacs.frba.utn.telegram.user.UserSession;
 import tacs.frba.utn.telegram.user.UserSession.SessionState;
 
@@ -43,13 +49,31 @@ public class FavouriteProcessor {
 	}
 	
 	public static void viewList(UserSession session, Update update, SendMessage message) {
-		message.setText("Tu lista de Favoritos:\n\nSeleccioná tu siguiente acción.");
+		ExternalResponse apiResponse = TACSConnector.getFavouritesDetails(session);
+		JsonArray favouriteArray = apiResponse.getResponseData().getAsJsonArray().get(0).getAsJsonObject().get("contents").getAsJsonArray();
+		
+		String dataShow = "Tu lista de Favoritos:\n\n";
+		for (JsonElement favourite : favouriteArray) {
+			dataShow += "\n*ID del repositorio:* " + favourite.getAsJsonObject().get("id").getAsString() +
+					"\n*FechaDeRegistro:* " + favourite.getAsJsonObject().get("registerDate").getAsString() +
+					"\n*Lenguaje:* " + favourite.getAsJsonObject().get("language").getAsString() +
+					"\n\n";
+		}
+		if(favouriteArray.size() == 0) {
+			dataShow += " No posee favoritos";
+		}
+		
+		message.setText("\n\nSeleccioná tu siguiente acción.");
+		message.setText("Detalles de usuario\n" + dataShow+ "\n\nPodés continuar operando.");
+		
+		
 		MenuProcessor.refreshMainMenu(session, update, message);
 	}
 	
 	public static void addFavourite(UserSession session, Update update, SendMessage message) {
 		message.setText("Ingresa el ID de repositorio que querés añadir a tu lista o podes *cancelar* la operación:");
 		session.setState(SessionState.FAVOURITES_ADD_AWAITING_ID);
+		
 	}
 	
 	public static void addFavouriteAction(UserSession session, Update update, SendMessage message) {
@@ -58,7 +82,13 @@ public class FavouriteProcessor {
 		if(repoId.equalsIgnoreCase("Cancelar")) {
 			message.setText("Operación cancelada. Podés continuar utilizando la app.");
 		} else {
-			message.setText("Añadido repo " + repoId + " a tu lista de favoritos. Ya podés continuar operando.");
+			ExternalResponse apiResponse = null ;//= TACSConnector.addRepo(repoId, session);
+			if(apiResponse.getCode() == 200) {
+				message.setText("Añadido repo " + 0 + " a tu lista de favoritos. Ya podés continuar operando.");
+			}else {
+				message.setText("El repo ingresado no existe, reintentá. Podés también *cancelar* la consulta.");
+				session.setState(SessionState.FAVOURITES_ADD_AWAITING_ID);
+			}
 		}
 		
 		MenuProcessor.refreshMainMenu(session, update, message);

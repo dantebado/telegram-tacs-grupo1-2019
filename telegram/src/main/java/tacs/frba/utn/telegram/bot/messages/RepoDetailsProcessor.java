@@ -3,10 +3,13 @@ package tacs.frba.utn.telegram.bot.messages;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import com.google.gson.JsonObject;
+
 import tacs.frba.utn.telegram.external.ExternalResponse;
 import tacs.frba.utn.telegram.external.TACSConnector;
 import tacs.frba.utn.telegram.user.UserSession;
 import tacs.frba.utn.telegram.user.UserSession.SessionState;
+import utils.JsonTransformer;
 
 public class RepoDetailsProcessor {
 	
@@ -22,9 +25,15 @@ public class RepoDetailsProcessor {
 		String msgString = "";
 		
 		if(apiResponse.getCode() == 200) {
-			msgString += "Detalles del Repositorio #" + repoId +
-					"\nNombre: " + apiResponse.getResponseJson().get("name").getAsString() +
-					"\nNombre Completo: " + apiResponse.getResponseJson().get("full_name").getAsString();
+				JsonObject dataResponse = JsonTransformer.getGson().fromJson(apiResponse.getResponseData().getAsString(), JsonObject.class);
+				if(dataResponse.has("message")) {
+					msgString += "El repositorio no se encuentra.";
+				}else {
+					msgString += "*Detalles del Repositorio* #" + repoId +
+							"\n*Nombre:* " + dataResponse.get("name").getAsString() +
+							"\n*Nombre Completo:* " + dataResponse.get("full_name").getAsString();
+					
+				}
 		} else {
 			msgString += "El repositorio no se encuentra.";
 		}

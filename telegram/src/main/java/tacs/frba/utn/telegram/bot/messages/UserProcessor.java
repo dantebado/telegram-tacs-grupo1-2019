@@ -34,7 +34,7 @@ public class UserProcessor {
 				if(apiResponse.getCode() == 404) {
 					message.setText("El usuario " + user + " no existe.\nPodés continuar operando.");
 				} else {
-					JsonObject userData = apiResponse.getResponseJson();
+					JsonObject userData = apiResponse.getResponseData().getAsJsonObject();
 					JsonArray languagesArr = userData.get("languages").getAsJsonArray();
 					String dataShow = "*Username:* " + userData.get("username").getAsString() +
 							"\n*Último acceso:* " + userData.get("lastAccessTime").getAsString() +

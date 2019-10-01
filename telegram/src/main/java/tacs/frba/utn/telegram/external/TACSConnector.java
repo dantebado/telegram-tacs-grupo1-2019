@@ -45,5 +45,9 @@ public class TACSConnector {
 	public static ExternalResponse getRepoDetails(String repoId, UserSession session) {
 		return ExternalRequest.getAPI("user/repositories/" + repoId, session.getCookie(), null);
 	}
+	
+	public static ExternalResponse getFavouritesDetails(UserSession session) {
+		return ExternalRequest.getAPI("user/favourites", session.getCookie(), null);
+	}
 
 }

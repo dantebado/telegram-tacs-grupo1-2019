@@ -25,7 +25,7 @@ public class RepoPopularityProcessor {
 			ExternalResponse apiResponse = TACSConnector.queryRepoAsAdmin(repo, session);
 						
 			if(apiResponse.getCode() == 200) {				
-				message.setText("Los usuarios que añadieron el repo a sus favoritos son " + apiResponse.getResponseJson().get("userAmmount").getAsInt() + "\n¿Qué hacemos a continuación?");
+				message.setText("Los usuarios que añadieron el repo a sus favoritos son " + apiResponse.getResponseData().getAsJsonObject().get("userAmount").getAsInt() + "\n¿Qué hacemos a continuación?");
 				MenuProcessor.refreshMainMenu(session, update, message);				
 			} else {
 				message.setText("El repo ingresado no existe, reintentá. Podés también *cancelar* la consulta.");
