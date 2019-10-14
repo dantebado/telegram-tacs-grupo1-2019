@@ -107,7 +107,7 @@ public class RepoRegistrationProcessor {
 				String queryStringDate = dateFormat.format(calendar.getTime());
 				ExternalResponse apiResponse = TACSConnector.getRepoAnalytics(queryStringDate, session);
 				if(apiResponse.getCode() == 200) {
-					res_str += apiResponse.getResponseData().getAsJsonObject().get("repository_counter").getAsInt();
+					res_str += apiResponse.getResponseData().getAsJsonObject().get("repositoryCounter").getAsInt();
 				} else {
 					res_str = "Error en el request";
 				}
