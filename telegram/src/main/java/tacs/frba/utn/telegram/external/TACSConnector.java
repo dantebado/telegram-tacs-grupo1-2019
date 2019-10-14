@@ -50,6 +50,10 @@ public class TACSConnector {
 		return ExternalRequest.getAPI("user/favourites", session.getCookie(), null);
 	}
 	
+	public static ExternalResponse addRepo(String favId, String repoId, UserSession session) {
+		return ExternalRequest.putAPI("user/favourites/" + favId + "/repositories/" + repoId, session.getCookie(), null);
+	}
+	
 	public static ExternalResponse getAdvancedSearch(UserSession session) {
 		String query = (String)session.getFromCache("query");
 		String name = (String)session.getFromCache("name");

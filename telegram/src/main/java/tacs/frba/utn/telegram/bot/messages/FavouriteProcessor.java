@@ -57,7 +57,7 @@ public class FavouriteProcessor {
 			dataShow += "\n*ID del repositorio:* " + favourite.getAsJsonObject().get("id").getAsString() +
 					"\n*FechaDeRegistro:* " + favourite.getAsJsonObject().get("registerDate").getAsString() +
 					"\n*Lenguaje:* " + favourite.getAsJsonObject().get("language").getAsString() +
-					"\n\n";
+					"\n";
 		}
 		if(favouriteArray.size() == 0) {
 			dataShow += " No posee favoritos";
@@ -71,24 +71,30 @@ public class FavouriteProcessor {
 	}
 	
 	public static void addFavourite(UserSession session, Update update, SendMessage message) {
-		message.setText("Ingresa el ID de repositorio que querés añadir a tu lista o podes *cancelar* la operación:");
+		message.setText("Ingresa el *ID de repositorio* que querés añadir a una de tus listas");
 		session.setState(SessionState.FAVOURITES_ADD_AWAITING_ID);
 		
 	}
 	
 	public static void addFavouriteAction(UserSession session, Update update, SendMessage message) {
-		String repoId = update.getMessage().getText();
+		String idRepo = update.getMessage().getText();
+		session.addToCache("repo_id", idRepo);
 		
-		if(repoId.equalsIgnoreCase("Cancelar")) {
-			message.setText("Operación cancelada. Podés continuar utilizando la app.");
-		} else {
-			ExternalResponse apiResponse = null ;//= TACSConnector.addRepo(repoId, session);
-			if(apiResponse.getCode() == 200) {
-				message.setText("Añadido repo " + 0 + " a tu lista de favoritos. Ya podés continuar operando.");
-			}else {
-				message.setText("El repo ingresado no existe, reintentá. Podés también *cancelar* la consulta.");
-				session.setState(SessionState.FAVOURITES_ADD_AWAITING_ID);
-			}
+		message.setText("Ingresá a qué *número de lista* donde querés agregarlo.");
+		session.setState(SessionState.FAVOURITES_ADD_AWAITING_FAV_ID);
+	}
+	
+	public static void addFavouriteRepoId(UserSession session, Update update, SendMessage message) {
+		String favId = update.getMessage().getText();
+		String repoId = (String)session.getFromCache("repo_id");
+		
+		ExternalResponse apiResponse = TACSConnector.addRepo(favId, repoId, session);
+		session.removeFromCache("repo_id");
+		if(apiResponse.getCode() == 200) {
+			message.setText("Añadido repo " + repoId + " a tu lista " + favId + ". Ya podés continuar operando.");
+		}else {
+			message.setText("El repo o lista de favoritos ingresado no existe, reintentá. Podés también *cancelar* la consulta.");
+			session.setState(SessionState.FAVOURITES_ADD_AWAITING_ID);
 		}
 		
 		MenuProcessor.refreshMainMenu(session, update, message);
