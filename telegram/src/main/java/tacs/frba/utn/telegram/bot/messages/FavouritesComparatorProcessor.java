@@ -3,7 +3,11 @@ package tacs.frba.utn.telegram.bot.messages;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 import tacs.frba.utn.telegram.bot.layouts.FavouriteLayout;
+import tacs.frba.utn.telegram.external.ExternalResponse;
 import tacs.frba.utn.telegram.external.TACSConnector;
 import tacs.frba.utn.telegram.user.UserSession;
 import tacs.frba.utn.telegram.user.UserSession.SessionState;
@@ -11,7 +15,7 @@ import tacs.frba.utn.telegram.user.UserSession.SessionState;
 public class FavouritesComparatorProcessor {
 	
 	public static void processAskOne(UserSession session, Update update, SendMessage message) {
-		message.setText("Ingresá un usuario para comparar sus favoritos contra otro. También podés *cancelar* la operación.");
+		message.setText("Ingresá un usuario (*el id*) para comparar sus favoritos contra otro. También podés *cancelar* la operación.");
 		session.setState(SessionState.ADMIN_COMPARE_AWAITING_ONE);
 	}
 	
@@ -21,7 +25,7 @@ public class FavouritesComparatorProcessor {
 		if(!oneUser.equalsIgnoreCase("cancelar")) {
 			if(TACSConnector.userExists(oneUser, session)) {
 				session.addToCache("comparator_1", oneUser);
-				message.setText("¿Contra qué usuario querés comparar a " + oneUser + "? También podés *cancelar* la operación.");
+				message.setText("¿Contra qué usuario (*el id*) querés comparar a " + oneUser + "? También podés *cancelar* la operación.");
 				session.setState(SessionState.ADMIN_COMPARE_AWAITING_TWO);
 			} else {
 				message.setText("Ese usuario no existe, reintentá. También podés *cancelar* la operación.");
@@ -45,8 +49,38 @@ public class FavouritesComparatorProcessor {
 					message.setText("El usuario que ingresaste es el mismo que el primero. Seleccioná uno diferente. También podés *cancelar* la operación.");
 					session.setState(SessionState.ADMIN_COMPARE_AWAITING_TWO);
 				} else {
-					message.setText("Esta es la comparación entre los usuarios " + oneUser + " y " + anotherUser + ".\n¿Qué hacemos ahora?");
-					MenuProcessor.refreshMainMenu(session, update, message);
+					ExternalResponse apiResponse = TACSConnector.comparateRepos(oneUser, anotherUser, session);
+					session.removeFromCache("comparator_1");
+
+					if(apiResponse.getCode() == 200) {
+						JsonArray reposArray = apiResponse.getResponseData().getAsJsonObject().get("repositorios").getAsJsonArray();
+						JsonArray langsArray = apiResponse.getResponseData().getAsJsonObject().get("langs").getAsJsonArray();
+						
+						String dataShow = "Repositorios en común:\n";
+						for (JsonElement repo : reposArray) {
+							dataShow += "\n*ID del repositorio:* " + repo.getAsJsonObject().get("id").getAsString() +
+									"\n*FechaDeRegistro:* " + repo.getAsJsonObject().get("registerDate").getAsString() +
+									"\n*Lenguaje:* " + repo.getAsJsonObject().get("language").getAsString() +
+									"\n";
+						}
+						if(reposArray.size() == 0) {
+							dataShow += " No hay repositorios en común";
+						}
+						dataShow += "\nLenguajes en común:\n\n";
+						for (JsonElement language : langsArray) {
+							dataShow += "\n*Lenguaje:* " + language.getAsString() +
+									"\n";
+						}
+						if(langsArray.size() == 0) {
+							dataShow += " No hay lenguajes en común";
+						}
+						
+						message.setText(dataShow);
+						MenuProcessor.refreshMainMenu(session, update, message);
+					}else {
+						message.setText("No se ha podido comparar");
+						MenuProcessor.refreshMainMenu(session, update, message);
+					}
 				}
 				
 			} else {
