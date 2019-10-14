@@ -65,7 +65,7 @@ public class TACSConnector {
 		String sort = (String)session.getFromCache("sort");
 		String order = (String)session.getFromCache("order");
 		
-		String uri = "user/repositories?";
+		String uri = "user/github/repositories?";
 		boolean atLeastOneField = false;
 		
 		if(query != null) {

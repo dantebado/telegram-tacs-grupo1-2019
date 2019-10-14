@@ -75,7 +75,8 @@ public class AdvancedSearchProcessor {
 		session.removeFromCache("sort");
 		session.removeFromCache("order");
 		
-		JsonObject dataResponse = apiResponse.getResponseJson();
+		JsonObject dataResponse = apiResponse.getResponseData().getAsJsonObject();
+		System.out.println(dataResponse);
 		String dataShow = "*Cantidad de repositorios encontrados:* " + dataResponse.get("total_count").getAsInt()
 			+ "\n*Resultados (primeros 5):* \n"; 
 		JsonArray elements = dataResponse.get("items").getAsJsonArray();
