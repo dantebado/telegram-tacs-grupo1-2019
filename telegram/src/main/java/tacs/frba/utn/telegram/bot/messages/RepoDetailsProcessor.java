@@ -25,14 +25,17 @@ public class RepoDetailsProcessor {
 		String msgString = "";
 		
 		if(apiResponse.getCode() == 200) {
-				JsonObject dataResponse = JsonTransformer.getGson().fromJson(apiResponse.getResponseData().getAsString(), JsonObject.class);
+				JsonObject dataResponse = JsonTransformer.getGson().fromJson(apiResponse.getResponseData().getAsJsonObject(), JsonObject.class);
 				if(dataResponse.has("message")) {
 					msgString += "El repositorio no se encuentra.";
 				}else {
 					msgString += "*Detalles del Repositorio* #" + repoId +
 							"\n*Nombre:* " + dataResponse.get("name").getAsString() +
-							"\n*Nombre Completo:* " + dataResponse.get("full_name").getAsString();
-					
+							"\n*Descripción:* " + dataResponse.get("description").getAsString() +
+							"\n*Lenguaje:* " + dataResponse.get("language").getAsString() +
+							"\n*Forks:* " + dataResponse.get("forks_count").getAsString() +
+							"\n*Issues:* " + dataResponse.get("open_issues_count").getAsString() +
+							"\n*Stars:* " + dataResponse.get("stargazers_count").getAsString();
 				}
 		} else {
 			msgString += "El repositorio no se encuentra.";
