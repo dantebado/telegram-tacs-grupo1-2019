@@ -61,9 +61,13 @@ public class MessageProcessor {
 				FavouriteProcessor.addFavouriteRepoId(session, update, sendMessage);
 				break;
 				
-			case FAVOURITES_REMOVE_AWAITING_ID:
+			case FAVOURITES_REMOVE_AWAITING_ID_REPO:
 				FavouriteProcessor.removeFavouriteAction(session, update, sendMessage);
 				break;
+			case FAVOURITES_REMOVE_AWAITING_ID_FAV:
+				FavouriteProcessor.removeFavouriteAddRepoId(session, update, sendMessage);
+				break;
+				
 			case FAVOURITES_CLEAR_AWAITING_CONFIRMATION:
 				FavouriteProcessor.clearListConfirmation(session, update, sendMessage);
 				break;

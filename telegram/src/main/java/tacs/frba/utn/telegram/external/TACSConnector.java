@@ -54,6 +54,10 @@ public class TACSConnector {
 		return ExternalRequest.putAPI("user/favourites/" + favId + "/repositories/" + repoId, session.getCookie(), null);
 	}
 	
+	public static ExternalResponse deleteRepo(String favId, String repoId, UserSession session) {
+		return ExternalRequest.deleteAPI("user/favourites/" + favId + "/repositories/" + repoId, session.getCookie(), null);
+	}
+	
 	public static ExternalResponse getAdvancedSearch(UserSession session) {
 		String query = (String)session.getFromCache("query");
 		String name = (String)session.getFromCache("name");

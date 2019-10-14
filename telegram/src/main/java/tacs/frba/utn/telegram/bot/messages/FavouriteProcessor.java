@@ -101,20 +101,44 @@ public class FavouriteProcessor {
 	}
 	
 	public static void removeFavourite(UserSession session, Update update, SendMessage message) {
-		message.setText("Ingresa el ID de repositorio que querés eliminar de tu lista o podes *cancelar* la operación:");
-		session.setState(SessionState.FAVOURITES_REMOVE_AWAITING_ID);
+		message.setText("Ingresa el número de la lista donde se encuentra el repositorio que querés eliminar o podes *cancelar* la operación:");
+		session.setState(SessionState.FAVOURITES_REMOVE_AWAITING_ID_FAV);
 	}
+	
+	public static void removeFavouriteAddRepoId(UserSession session, Update update, SendMessage message) {
+		String favId = update.getMessage().getText();
+		
+		if(favId.equalsIgnoreCase("Cancelar")) {
+			message.setText("Ningún favorito será eliminado. Podemos continuar utilizando la app.");
+			MenuProcessor.refreshMainMenu(session, update, message);
+		} else {
+			session.addToCache("fav_id", favId);
+			
+			message.setText("Ingresá el id del repositorio que querés eliminar. Podés *cancelar* la operacion:");
+			session.setState(SessionState.FAVOURITES_REMOVE_AWAITING_ID_REPO);
+		}
+
+	}
+	
 	
 	public static void removeFavouriteAction(UserSession session, Update update, SendMessage message) {
 		String repoId = update.getMessage().getText();
-		
+		String favId = (String)session.getFromCache("fav_id");
+
+		ExternalResponse apiResponse = TACSConnector.deleteRepo(favId, repoId, session);
+		session.removeFromCache("fav_id");
 		if(repoId.equalsIgnoreCase("Cancelar")) {
 			message.setText("Ningún favorito será eliminado. Podemos continuar utilizando la app.");
 		} else {
-			message.setText("Eliminado el repo " + repoId + " a tu lista de favoritos. Continuá utilizando la app.");
+			if(apiResponse.getCode() == 200) {
+				message.setText("Eliminado el repo " + repoId + " a tu lista de favoritos" + favId + ". Continuá utilizando la app.");
+				MenuProcessor.refreshMainMenu(session, update, message);
+			}else {
+				message.setText("El repo o lista de favoritos ingresado no existe, reintentá. Podés también *cancelar* la consulta.");
+				session.setState(SessionState.FAVOURITES_ADD_AWAITING_ID);
+			}
 		}
 		
-		MenuProcessor.refreshMainMenu(session, update, message);
 	}
 	
 	public static void clearList(UserSession session, Update update, SendMessage message) {
